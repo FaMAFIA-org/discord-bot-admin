@@ -23,11 +23,12 @@
   },
   "homepage": "https://github.com/FaMAFIA-org/discord-bot-admin#readme",
   "dependencies": {
-    "discord.js": "^14.13.0",
+    "@discordjs/core": "^1.0.1",
+    "@discordjs/rest": "^2.0.1",
+    "@discordjs/ws": "^1.0.1",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "eslint": "^8.48.0"
-
   }
 }
