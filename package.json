@@ -1,34 +1,36 @@
 {
-  "name": "discord-bot-admin",
-  "version": "1.0.0",
-  "description": "discord bot for famafia",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FaMAFIA-org/discord-bot-admin.git"
-  },
-  "keywords": [
-    "discord",
-    "bot",
-    "famafia"
-  ],
-  "author": "FaMAFIA",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/FaMAFIA-org/discord-bot-admin/issues"
-  },
-  "homepage": "https://github.com/FaMAFIA-org/discord-bot-admin#readme",
-  "dependencies": {
-    "@discordjs/core": "^1.0.1",
-    "@discordjs/rest": "^2.0.1",
-    "@discordjs/ws": "^1.0.1",
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "eslint": "^8.48.0"
-  }
+	"name": "discord-bot-admin",
+	"version": "1.0.0",
+	"description": "discord bot for famafia",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"start": "nodemon --experimental-modules --es-module-specifier-resolution=node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FaMAFIA-org/discord-bot-admin.git"
+	},
+	"keywords": [
+		"discord",
+		"bot",
+		"famafia"
+	],
+	"author": "FaMAFIA",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/FaMAFIA-org/discord-bot-admin/issues"
+	},
+	"homepage": "https://github.com/FaMAFIA-org/discord-bot-admin#readme",
+	"dependencies": {
+		"@discordjs/core": "^1.0.1",
+		"@discordjs/rest": "^2.0.1",
+		"@discordjs/ws": "^1.0.1",
+		"dotenv": "^16.3.1",
+		"nodemon": "^3.0.1"
+	},
+	"devDependencies": {
+		"eslint": "^8.48.0"
+	}
 }

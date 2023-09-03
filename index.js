@@ -5,10 +5,10 @@ import {
 	GatewayIntentBits,
 	Client,
 } from '@discordjs/core';
-import pingFunction from './commands/new-ping.js';
-
 import 'dotenv/config';
 
+// commands import
+import pingFunction from './commands/new-ping';
 // Create REST and WebSocket managers directly
 const rest = new REST({ version: '10' }).setToken(
 	process.env.NODE_DISCORD_TOKEN,
