@@ -24,3 +24,7 @@ Ejecutar el proyecto con `node index.js`
 
 ## Documentacion
 Un bot de discord para el servidor de discord de la famafia, usando [discord.js](https://discord.js.org/docs/packages/core/1.0.1)
+
+### Paquetes
+- `discord.js` : Interaccion con la API discord
+- `dotenv` : Interaccion con archivos .env 
