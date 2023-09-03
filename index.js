@@ -8,7 +8,7 @@ import {
 import 'dotenv/config';
 
 // commands import
-import pingFunction from './commands/new-ping';
+import pingFunction from './commands/new-ping.js';
 // Create REST and WebSocket managers directly
 const rest = new REST({ version: '10' }).setToken(
 	process.env.NODE_DISCORD_TOKEN,
@@ -20,8 +20,13 @@ const gateway = new WebSocketManager({
 	rest,
 });
 
+
 // Create a client to emit relevant events.
 const client = new Client({ rest, gateway });
+
+client.on(Events.ShardError, error => {
+	console.error('A websocket connection encountered an error:', error);
+});
 
 // Listen for interactions
 // Each event contains an `api` prop along with the event data that allows you to interface with the Discord REST API
