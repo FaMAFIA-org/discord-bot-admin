@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "discord bot for famafia",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,9 +23,11 @@
   },
   "homepage": "https://github.com/FaMAFIA-org/discord-bot-admin#readme",
   "dependencies": {
-    "discord.js": "^14.13.0"
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "eslint": "^8.48.0"
+
   }
 }
