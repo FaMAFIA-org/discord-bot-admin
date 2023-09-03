@@ -1,49 +1,19 @@
-import { REST } from "@discordjs/rest";
-import "dotenv/config";
-import { WebSocketManager } from "@discordjs/ws";
-import {
-  GatewayDispatchEvents,
-  GatewayIntentBits,
-  InteractionType,
-  MessageFlags,
-  Client,
-} from "@discordjs/core";
-console.log(process.env.NODE_DISCORD_TOKEN);
-// Create REST and WebSocket managers directly
-const rest = new REST({ version: "10" }).setToken(
-  process.env.NODE_DISCORD_TOKEN,
-);
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import 'dotenv/config';
 
-const gateway = new WebSocketManager({
-  token: process.env.NODE_DISCORD_TOKEN,
-  intents: GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
-  rest,
+
+const token = process.env.NODE_DISCORD_TOKEN;
+// console.log(process.env.NODE_DISCORD_PUBLIC_KEY);
+// console.log(process.env.NODE_DISCORD_APP_ID);
+
+// Create a new client instance
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+// When the client is ready, run this code (only once)
+// We use 'c' for the event parameter to keep it separate from the already defined 'client'
+client.once(Events.ClientReady, c => {
+	console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
-// Create a client to emit relevant events.
-const client = new Client({ rest, gateway });
-
-// Listen for interactions
-// Each event contains an `api` prop along with the event data that allows you to interface with the Discord REST API
-client.on(
-  GatewayDispatchEvents.InteractionCreate,
-  async ({ data: interaction, api }) => {
-    if (
-      interaction.type !== InteractionType.ApplicationCommand ||
-      interaction.data.name !== "ping"
-    ) {
-      return;
-    }
-
-    await api.interactions.reply(interaction.id, interaction.token, {
-      content: "Pong!",
-      flags: MessageFlags.Ephemeral,
-    });
-  },
-);
-
-// Listen for the ready event
-client.once(GatewayDispatchEvents.Ready, () => console.log("Ready!"));
-
-// Start the WebSocket connection.
-gateway.connect();
+// Log in to Discord with your client's token
+client.login(token);
