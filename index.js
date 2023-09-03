@@ -1,9 +1,18 @@
 import { REST } from '@discordjs/rest';
 import { WebSocketManager } from '@discordjs/ws';
-import { GatewayDispatchEvents, GatewayIntentBits, Client } from '@discordjs/core';
+import {
+	GatewayDispatchEvents,
+	GatewayIntentBits,
+	Client,
+} from '@discordjs/core';
 import pingFunction from './commands/new-ping.js';
+
+import 'dotenv/config';
+
 // Create REST and WebSocket managers directly
-const rest = new REST({ version: '10' }).setToken(process.env.NODE_DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(
+	process.env.NODE_DISCORD_TOKEN,
+);
 
 const gateway = new WebSocketManager({
 	token: process.env.NODE_DISCORD_TOKEN,
