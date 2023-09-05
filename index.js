@@ -1,34 +1,49 @@
-import { REST } from '@discordjs/rest';
-import { WebSocketManager } from '@discordjs/ws';
-import {
-	GatewayDispatchEvents,
-	GatewayIntentBits,
-	Client,
-} from '@discordjs/core';
-import 'dotenv/config';
+const fs = require('node:fs');
+const path = require('node:path');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { token } = require('./config.json');
 
-// commands import
-import pingFunction from './commands/new-ping';
-// Create REST and WebSocket managers directly
-const rest = new REST({ version: '10' }).setToken(
-	process.env.NODE_DISCORD_TOKEN,
-);
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-const gateway = new WebSocketManager({
-	token: process.env.NODE_DISCORD_TOKEN,
-	intents: GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
-	rest,
+client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
+
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+client.once(Events.ClientReady, () => {
+	console.log('Ready!');
 });
 
-// Create a client to emit relevant events.
-const client = new Client({ rest, gateway });
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
 
-// Listen for interactions
-// Each event contains an `api` prop along with the event data that allows you to interface with the Discord REST API
-client.on(GatewayDispatchEvents.InteractionCreate, pingFunction);
+	const command = client.commands.get(interaction.commandName);
 
-// Listen for the ready event
-client.once(GatewayDispatchEvents.Ready, () => console.log('Ready!'));
+	if (!command) return;
 
-// Start the WebSocket connection.
-gateway.connect();
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
+});
+
+client.login(token);
