@@ -1,34 +1,53 @@
-import { REST } from '@discordjs/rest';
-import { WebSocketManager } from '@discordjs/ws';
-import {
-	GatewayDispatchEvents,
-	GatewayIntentBits,
-	Client,
-} from '@discordjs/core';
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { REST, Routes, Client, GatewayIntentBits } from 'discord.js';
 
-// commands import
-import pingFunction from './commands/new-ping';
-// Create REST and WebSocket managers directly
-const rest = new REST({ version: '10' }).setToken(
-	process.env.NODE_DISCORD_TOKEN,
-);
+config();
 
-const gateway = new WebSocketManager({
-	token: process.env.NODE_DISCORD_TOKEN,
-	intents: GatewayIntentBits.GuildMessages | GatewayIntentBits.MessageContent,
-	rest,
+// Comandos
+const commands = [
+	{
+		name: 'ping',
+		description: 'Replies with Pong!',
+	},
+];
+
+const TOKEN = process.env.NODE_DISCORD_TOKEN;
+const CLIENT_ID = process.env.NODE_DISCORD_APP_ID;
+
+const rest = new REST({ version: '10' }).setToken(TOKEN);
+
+try {
+	console.log('Started refreshing application (/) commands.');
+
+	await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+
+	console.log('Successfully reloaded application (/) commands.');
+} catch (error) {
+	console.error(error);
+}
+
+// Esto nos dice que partes necesitamos pedirle a la API
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		//GatewayIntentBits.MessageContent, // Esto requiere activar los intents desde el bot
+	],
 });
 
-// Create a client to emit relevant events.
-const client = new Client({ rest, gateway });
+client.on('ready', () => {
+	console.log(`the ${client.user.tag} bot has logged in!`);
+})
 
-// Listen for interactions
-// Each event contains an `api` prop along with the event data that allows you to interface with the Discord REST API
-client.on(GatewayDispatchEvents.InteractionCreate, pingFunction);
+// handle slash commands
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isChatInputCommand()) return;
 
-// Listen for the ready event
-client.once(GatewayDispatchEvents.Ready, () => console.log('Ready!'));
+	if (interaction.commandName === 'ping') {
+		await interaction.reply('Pong!');
+	}
+});
 
-// Start the WebSocket connection.
-gateway.connect();
+// // log in bot
+client.login(TOKEN);
+
