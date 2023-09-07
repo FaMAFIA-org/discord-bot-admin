@@ -65,7 +65,7 @@ client.on('interactionCreate', async interaction => {
 		await interaction.reply('Pong!');
 	} else if (interaction.commandName === 'warning') {
 		console.log(interaction.options.get('user'))
-		await interaction.reply(`ahora @${interaction.options.get('user').user.tag} se gano un warning por ${interaction.options.get('motivo').value}`)
+		await interaction.reply(`ahora ${interaction.options.get('user').user} se gano un warning por: ${interaction.options.get('motivo').value}`)
 	}
 });
 
