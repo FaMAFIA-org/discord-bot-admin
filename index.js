@@ -1,30 +1,16 @@
+import { Client,Collection,Events,GatewayIntentBits,REST } from 'discord.js';
 import { config } from 'dotenv';
-import { REST, Routes, Client, GatewayIntentBits } from 'discord.js';
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 config();
-
-// Comandos
-const commands = [
-	{
-		name: 'ping',
-		description: 'Replies with Pong!',
-	},
-];
-
-const TOKEN = process.env.NODE_DISCORD_TOKEN;
+const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.NODE_DISCORD_APP_ID;
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
-
-try {
-	console.log('Started refreshing application (/) commands.');
-
-	await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
-
-	console.log('Successfully reloaded application (/) commands.');
-} catch (error) {
-	console.error(error);
-}
 
 // Esto nos dice que partes necesitamos pedirle a la API
 const client = new Client({
@@ -35,19 +21,36 @@ const client = new Client({
 	],
 });
 
-client.on('ready', () => {
-	console.log(`the ${client.user.tag} bot has logged in!`);
-})
+client.commands = new Collection();
 
-// handle slash commands
-client.on('interactionCreate', async interaction => {
+
+client.on(Events.InteractionCreate,async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
-	if (interaction.commandName === 'ping') {
-		await interaction.reply('Pong!');
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!',ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!',ephemeral: true });
+		}
 	}
 });
 
-// // log in bot
+// avisarnos que el bot se logueo
+client.on('ready',() => {
+	console.log(`the ${client.user.tag} bot has logged in!`);
+})
+
+// log in bot
 client.login(TOKEN);
 

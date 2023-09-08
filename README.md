@@ -23,8 +23,14 @@ Para Windows:
 ### Instalar Paquetes
 Instalaremos las dependencias del proyecto con `npm install`
 
-### Correr el Bot
-Ejecutar el proyecto con
+## Correr el Bot
+### Registrar comandos
+Cuando se agrega un comando, primero debe de ser registrado en Discord corriendo el usando deploy-commands. Si no se corre, los comandos no seran agregados.
+Comando para ejecutar el registro es:
+
+    node deploy-commands.js
+### Correr el bot
+Para corre el bot se debe ejecutar lo siguiente y dejar corriendo:
 
     npm run start
 
