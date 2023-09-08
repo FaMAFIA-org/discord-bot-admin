@@ -5,7 +5,7 @@ export default {
         .setName('warning')
         .setDescription('Cuidadito che...'),
     async execute(interaction) {
-        await interaction.reply('Pong!');
+        await interaction.reply('warnings!');
     },
 
 }

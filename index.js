@@ -1,4 +1,4 @@
-import { Client,Collection,GatewayIntentBits,REST,Routes } from 'discord.js';
+import { Client,Collection,Events,GatewayIntentBits,REST } from 'discord.js';
 import { config } from 'dotenv';
 import * as fs from 'node:fs';
 import path from 'node:path';
@@ -10,32 +10,6 @@ const __dirname = path.dirname(__filename);
 config();
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.NODE_DISCORD_APP_ID;
-
-// Comandos
-const commands = [
-	{
-		name: 'ping',
-		description: 'Replies with Pong!',
-	},
-	{
-		name: 'warning',
-		description: 'cuidadito che...',
-		options: [
-			{
-				name: 'user',
-				description: 'usuario',
-				type: 6,
-				required: true,
-			},
-			{
-				name: 'motivo',
-				description: 'infraccion',
-				type: 3,
-				required: true,
-			}
-		]
-	}
-];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
@@ -67,25 +41,47 @@ for (const file of commandFiles) {
 
 
 
-try {
-	console.log('Started refreshing application (/) commands.');
+// try {
+// 	console.log('Started refreshing application (/) commands.');
 
-	await rest.put(Routes.applicationCommands(CLIENT_ID),{ body: commands });
+// 	await rest.put(Routes.applicationCommands(CLIENT_ID),{ body: commands });
 
-	console.log('Successfully reloaded application (/) commands.');
-} catch (error) {
-	console.error(error);
-}
+// 	console.log('Successfully reloaded application (/) commands.');
+// } catch (error) {
+// 	console.error(error);
+// }
 
 // handle slash commands
-client.on('interactionCreate',async interaction => {
+// client.on('interactionCreate',async interaction => {
+// 	if (!interaction.isChatInputCommand()) return;
+
+// 	if (interaction.commandName === 'ping') {
+// 		await interaction.reply('Pong!');
+// 	} else if (interaction.commandName === 'warning') {
+// 		console.log(interaction.options.get('user'))
+// 		await interaction.reply(`ahora ${interaction.options.get('user').user} se gano un warning por: ${interaction.options.get('motivo').value}`)
+// 	}
+// });
+
+client.on(Events.InteractionCreate,async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
-	if (interaction.commandName === 'ping') {
-		await interaction.reply('Pong!');
-	} else if (interaction.commandName === 'warning') {
-		console.log(interaction.options.get('user'))
-		await interaction.reply(`ahora ${interaction.options.get('user').user} se gano un warning por: ${interaction.options.get('motivo').value}`)
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!',ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!',ephemeral: true });
+		}
 	}
 });
 
