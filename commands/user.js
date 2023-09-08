@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+import { SlashCommandBuilder } from "discord.js";
 
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
 		.setName('user')
 		.setDescription('Provides information about the user.'),
@@ -10,3 +10,4 @@ module.exports = {
 		await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
 	},
 };
+
